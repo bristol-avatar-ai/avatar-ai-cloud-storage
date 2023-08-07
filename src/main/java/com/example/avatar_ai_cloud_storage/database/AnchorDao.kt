@@ -9,7 +9,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AnchorDao {
     @Query("SELECT * FROM anchor")
-    fun getAnchors(): Flow<List<Anchor>>
+    fun getAnchors(): List<Anchor>
+
+    @Query("SELECT * FROM anchor")
+    fun getAnchorsFlow(): Flow<List<Anchor>>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(anchor: Anchor)

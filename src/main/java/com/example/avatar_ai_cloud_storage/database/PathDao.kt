@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PathDao {
     @Query("SELECT * FROM path")
-    fun getPaths(): Flow<List<Path>>
+    fun getPaths(): List<Path>
 
     @Query("SELECT * FROM path WHERE origin LIKE :anchorId")
     fun getPathsFromAnchor(anchorId: String): Flow<List<Path>>
