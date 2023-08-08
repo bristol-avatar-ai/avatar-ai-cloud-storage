@@ -17,7 +17,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun exhibitionDao(): ExhibitionDao
 
     companion object {
-        const val FILENAME = "data"
+        private const val FILENAME = "data"
 
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -25,7 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
         suspend fun getDatabase(context: Context): AppDatabase? {
             val databaseFile = File(context.filesDir, FILENAME)
             return INSTANCE ?: if (
-                com.example.avatar_ai_cloud_storage.network.CloudStorageApi.updateDatabase(databaseFile) || databaseFile.exists()
+                CloudStorageApi.updateDatabase(databaseFile) || databaseFile.exists()
             ) {
                 createDatabase(context, databaseFile)
             } else {

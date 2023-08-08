@@ -11,6 +11,9 @@ interface ExhibitionDao {
     @Query("SELECT * FROM exhibition")
     fun getExhibitions(): List<Exhibition>
 
+    @Query("SELECT * FROM exhibition WHERE name LIKE :name")
+    fun getExhibition(name: String): Exhibition?
+
     @Query("SELECT * FROM exhibition WHERE anchor LIKE :anchorId")
     fun getExhibitionsAtAnchor(anchorId: String): Flow<List<Exhibition>>
 
