@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.avatar_ai_cloud_storage.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.withTimeout
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -11,6 +12,11 @@ import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Headers
 import retrofit2.http.POST
+
+/**
+ * The TokenApi serves as a network API to connect to IBM IAM Cloud Authentication Service.
+ * IAM tokens can be requested to authenticate other services.
+ */
 
 private const val TAG = "IamTokenApiService"
 
@@ -35,6 +41,10 @@ private const val RESPONSE_TYPE_HEADER = "response_type"
 private const val RESPONSE_TYPE = "cloud_iam"
 private const val GRANT_TYPE_HEADER = "grant_type"
 private const val GRANT_TYPE = "urn:ibm:params:oauth:grant-type:apikey"
+
+// Time in milliseconds before a TimeoutException
+// is called on a download (GET) request.
+private const val TIMEOUT_MS = 3000L
 
 private const val MILLISECONDS_IN_SECOND = 1000L
 
@@ -70,7 +80,7 @@ interface TokenApiService {
 }
 
 /*
-* TokenApi connects to IBM IAM Authentication Service.
+* TokenApi connects to IBM IAM Cloud Authentication Service.
 * It is initialised as a public singleton object to conserve resources
 * by ensuring that the Retrofit API service is only initialised once.
  */
@@ -116,8 +126,10 @@ object TokenApi {
             GRANT_TYPE_HEADER to GRANT_TYPE
         )
         return try {
-            tokenResult = retrofitService.getToken(params)
-            tokenResult!!.accessToken
+            withTimeout(TIMEOUT_MS) {
+                tokenResult = retrofitService.getToken(params)
+                tokenResult!!.accessToken
+            }
         } catch (e: HttpException) {
             val httpError = e.response()?.errorBody()?.string() ?: "Unknown error"
             Log.e(TAG, "getNewToken: HTTP error: $httpError", e)

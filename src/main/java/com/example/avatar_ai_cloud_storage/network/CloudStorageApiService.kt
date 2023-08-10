@@ -1,8 +1,7 @@
 package com.example.avatar_ai_cloud_storage.network
 
-import android.icu.text.SimpleDateFormat
-import android.icu.util.TimeZone
 import android.util.Log
+import com.example.avatar_ai_cloud_storage.BuildConfig
 import kotlinx.coroutines.withTimeout
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -17,8 +16,10 @@ import retrofit2.http.PUT
 import retrofit2.http.Streaming
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 /**
  * The TranscriptionApi serves as a network API to connect to IBM Cloud Object Storage Service.
@@ -31,8 +32,8 @@ private const val TAG = "CloudStorageApiService"
 // SERVICE CREDENTIALS
 // URL Details
 private const val BASE_URL = "https://s3.eu-gb.cloud-object-storage.appdomain.cloud"
-private const val DATABASE_ENDPOINT = "/mvb/data.db"
-private const val MODEL_ENDPOINT = "/mvb/model.tflite"
+private const val DATABASE_ENDPOINT = BuildConfig.DATABASE_STORAGE_ENDPOINT
+private const val MODEL_ENDPOINT = BuildConfig.MODEL_STORAGE_ENDPOINT
 
 // Request Headers
 private const val AUTHORISATION_HEADER = "Authorization"
@@ -54,7 +55,7 @@ private const val BUFFER_SIZE = 4096
 
 // Time in milliseconds before a TimeoutException
 // is called on a download (GET) request.
-private const val TIMEOUT_DURATION = 6000L
+private const val TIMEOUT_MS = 7000L
 
 /*
 * Retrofit object with the base URL. No converter factory
@@ -102,7 +103,6 @@ interface CloudStorageApiService {
         @Body requestBody: RequestBody
     ): Response<ResponseBody>
 }
-
 
 /*
 * CloudStorageApi connects to IBM Cloud Object Storage Service.
@@ -173,7 +173,7 @@ object CloudStorageApi {
         // Get a valid IAM token, return null if unsuccessful.
         val token = TokenApi.getToken() ?: return null
         return try {
-            withTimeout(TIMEOUT_DURATION) {
+            withTimeout(TIMEOUT_MS) {
                 when (option) {
                     Option.DATABASE -> retrofitService.getDatabase(
                         "$BEARER_PREFIX $token", getLastModified(localFile)
@@ -254,17 +254,33 @@ object CloudStorageApi {
         val requestBody = databaseFile.asRequestBody(CONTENT_TYPE.toMediaTypeOrNull())
 
         return try {
-            val response =
-                retrofitService.uploadDatabase("$BEARER_PREFIX $token", CONTENT_TYPE, requestBody)
-            if (response.isSuccessful) {
-                Log.i(TAG, "Database was uploaded successfully")
-                true
-            } else {
-                Log.e(TAG, "uploadDatabase: HTTP error: ${response.code()} - ${response.message()}")
-                false
+            val response = withTimeout(TIMEOUT_MS) {
+                retrofitService.uploadDatabase(
+                    "$BEARER_PREFIX $token",
+                    CONTENT_TYPE,
+                    requestBody
+                )
             }
+            processResponse(response)
         } catch (e: Exception) {
             Log.e(TAG, "uploadDatabase: exception occurred", e)
+            false
+        }
+    }
+
+    /*
+    * This function checks the upload response, logs the result and
+    * returns a Boolean to indicate if the upload was successful.
+     */
+    private fun processResponse(response: Response<ResponseBody>): Boolean {
+        return if (response.isSuccessful) {
+            Log.i(TAG, "Database was uploaded successfully")
+            true
+        } else {
+            Log.e(
+                TAG,
+                "uploadDatabase: HTTP error: ${response.code()} - ${response.message()}"
+            )
             false
         }
     }

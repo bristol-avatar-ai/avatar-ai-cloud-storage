@@ -17,8 +17,14 @@ android {
 
     buildTypes {
         all {
-            // IBM Watson Speech to Text Credentials
+            // Load IBM Cloud Storage Credentials from gradle.properties
+            val databaseEndPoint = project.property("DATABASE_STORAGE_ENDPOINT")
+            val modelEndPoint = project.property("MODEL_STORAGE_ENDPOINT")
             val cloudObjectStorageApiKey = project.property("CLOUD_OBJECT_STORAGE_API_KEY")
+
+            // Initialise the credentials as BuildConfig fields.
+            buildConfigField("String", "DATABASE_STORAGE_ENDPOINT", "$databaseEndPoint")
+            buildConfigField("String", "MODEL_STORAGE_ENDPOINT", "$modelEndPoint")
             buildConfigField("String", "CLOUD_OBJECT_STORAGE_API_KEY", "$cloudObjectStorageApiKey")
         }
 
@@ -44,7 +50,7 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
 
