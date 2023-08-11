@@ -3,6 +3,8 @@ package com.example.avatar_ai_cloud_storage.network
 import android.icu.text.SimpleDateFormat
 import android.icu.util.TimeZone
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -212,14 +214,16 @@ object CloudStorageApi {
     * This function deletes file if it exists and writes the data
     * from responseBody to it. The returned Boolean indicates success.
      */
-    private fun writeToFile(file: File, responseBody: ResponseBody, option: Option): Boolean {
+    private suspend fun writeToFile(file: File, responseBody: ResponseBody, option: Option): Boolean {
         // Delete the file if it already exists.
         if (file.exists()) {
             file.delete()
         }
 
         return try {
-            writeData(file, responseBody)
+            withContext(Dispatchers.IO) {
+                writeData(file, responseBody)
+            }
             Log.i(TAG, "$option updated")
             true
         } catch (e: Exception) {
@@ -231,8 +235,7 @@ object CloudStorageApi {
     /*
     * This function writes the data from responseBody to file.
      */
-    private fun writeData(file: File, responseBody: ResponseBody) {
-        responseBody.byteStream().use { inputStream ->
+    private fun writeData(file: File, responseBody: ResponseBody) { responseBody.byteStream().use { inputStream ->
             FileOutputStream(file).use { outputStream ->
                 val buffer = ByteArray(BUFFER_SIZE)
                 var bytesRead: Int
