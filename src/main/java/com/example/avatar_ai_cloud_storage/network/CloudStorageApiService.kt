@@ -2,6 +2,8 @@ package com.example.avatar_ai_cloud_storage.network
 
 import android.util.Log
 import com.example.avatar_ai_cloud_storage.BuildConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -212,14 +214,20 @@ object CloudStorageApi {
     * This function deletes file if it exists and writes the data
     * from responseBody to it. The returned Boolean indicates success.
      */
-    private fun writeToFile(file: File, responseBody: ResponseBody, option: Option): Boolean {
+    private suspend fun writeToFile(
+        file: File,
+        responseBody: ResponseBody,
+        option: Option
+    ): Boolean {
         // Delete the file if it already exists.
         if (file.exists()) {
             file.delete()
         }
 
         return try {
-            writeData(file, responseBody)
+            withContext(Dispatchers.IO) {
+                writeData(file, responseBody)
+            }
             Log.i(TAG, "$option updated")
             true
         } catch (e: Exception) {
