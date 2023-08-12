@@ -6,6 +6,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.avatar_ai_cloud_storage.database.AppDatabase.Companion.getDatabase
+import com.example.avatar_ai_cloud_storage.database.dao.AnchorDao
+import com.example.avatar_ai_cloud_storage.database.dao.FeatureDao
+import com.example.avatar_ai_cloud_storage.database.dao.PathDao
+import com.example.avatar_ai_cloud_storage.database.dao.PrimaryFeatureDao
+import com.example.avatar_ai_cloud_storage.database.dao.TourFeatureDao
+import com.example.avatar_ai_cloud_storage.database.entity.Anchor
+import com.example.avatar_ai_cloud_storage.database.entity.Feature
+import com.example.avatar_ai_cloud_storage.database.entity.Path
+import com.example.avatar_ai_cloud_storage.database.entity.PrimaryFeature
+import com.example.avatar_ai_cloud_storage.database.entity.TourFeature
 import com.example.avatar_ai_cloud_storage.network.CloudStorageApi
 import java.io.File
 
@@ -17,16 +27,21 @@ private const val TAG = "AppDatabase"
  * and creating the instance if necessary.
  */
 
-@Database(entities = [Anchor::class, Path::class, Exhibition::class], version = 6)
+@Database(
+    version = 8,
+    entities = [Anchor::class, Path::class, Feature::class, PrimaryFeature::class, TourFeature::class]
+)
 abstract class AppDatabase : RoomDatabase() {
     // These functions provide easy access to the DAOs.
     abstract fun anchorDao(): AnchorDao
     abstract fun pathDao(): PathDao
-    abstract fun exhibitionDao(): ExhibitionDao
+    abstract fun featureDao(): FeatureDao
+    abstract fun primaryFeatureDao(): PrimaryFeatureDao
+    abstract fun tourFeatureDao(): TourFeatureDao
 
     companion object {
-        // Database file name.
-        private const val FILENAME = "data"
+        // Database file name (keep public).
+        const val FILENAME = "data"
 
         /*
         * Volatile instance ensures proper synchronization of database access.
@@ -73,8 +88,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     databaseFile.toPath().toString()
                 )
-                    // Room will destructively recreate tables if no
-                    // Migration is found for a new schema version.
+                    // Destructively recreate tables if no Migration found for new schema.
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

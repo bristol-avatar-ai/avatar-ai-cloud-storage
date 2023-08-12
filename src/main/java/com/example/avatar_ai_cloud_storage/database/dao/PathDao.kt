@@ -1,9 +1,10 @@
-package com.example.avatar_ai_cloud_storage.database
+package com.example.avatar_ai_cloud_storage.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.avatar_ai_cloud_storage.database.entity.Path
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -1,4 +1,4 @@
-package com.example.avatar_ai_cloud_storage.database
+package com.example.avatar_ai_cloud_storage.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
