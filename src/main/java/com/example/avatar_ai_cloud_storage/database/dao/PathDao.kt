@@ -19,18 +19,18 @@ interface PathDao {
     fun getPaths(): List<Path>
 
     // Retrieve paths originating from a specific anchor, returned as a Flow.
-    @Query("SELECT * FROM path WHERE origin LIKE :anchorId")
+    @Query("SELECT * FROM path WHERE anchor1 LIKE :anchorId")
     fun getPathsFromAnchor(anchorId: String): Flow<List<Path>>
 
     // Insert a new path, aborts on a conflict.
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(path: Path)
 
-    // Update a path's distance based on its origin and destination.
-    @Query("UPDATE path SET distance = :distance WHERE origin LIKE :origin AND destination LIKE :destination")
-    suspend fun update(origin: String, destination: String, distance: Int)
+    // Update a path's distance based on its anchor1 and anchor2.
+    @Query("UPDATE path SET distance = :distance WHERE anchor1 LIKE :anchor1 AND anchor2 LIKE :anchor2")
+    suspend fun update(anchor1: String, anchor2: String, distance: Int)
 
-    // Delete a path based on its origin and destination.
-    @Query("DELETE FROM path WHERE origin LIKE :origin AND destination LIKE :destination")
-    suspend fun delete(origin: String, destination: String)
+    // Delete a path based on its anchor1 and anchor2.
+    @Query("DELETE FROM path WHERE anchor1 LIKE :anchor1 AND anchor2 LIKE :anchor2")
+    suspend fun delete(anchor1: String, anchor2: String)
 }

@@ -6,39 +6,39 @@ import androidx.room.ForeignKey
 
 /**
  * This data class represents an [Path] entity in the Room database.
- * An "path" represents a straight-line path from one Cloud Anchor to another.
- * [origin]: Origin Anchor ID.
- * [destination]: Destination Anchor ID.
+ * An "path" represents a bidirectional path from one Cloud Anchor to another.
+ * [anchor1]: First Anchor ID.
+ * [anchor2]: Second Anchor ID.
  * [distance]: Relative cost/weight of path.
  */
 
 @Entity(
     tableName = "path",
-    primaryKeys = ["origin", "destination"],
+    primaryKeys = ["anchor1", "anchor2"],
     foreignKeys = [
         // An Path is deleted if either parent Anchor ID is deleted or modified.
         ForeignKey(
             entity = Anchor::class,
             parentColumns = ["id"],
-            childColumns = ["origin"],
+            childColumns = ["anchor1"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Anchor::class,
             parentColumns = ["id"],
-            childColumns = ["destination"],
+            childColumns = ["anchor2"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         )
     ]
 )
 data class Path(
-    @ColumnInfo(name = "origin")
-    val origin: String,
+    @ColumnInfo(name = "anchor1")
+    val anchor1: String,
 
-    @ColumnInfo(name = "destination")
-    val destination: String,
+    @ColumnInfo(name = "anchor2")
+    val anchor2: String,
 
     @ColumnInfo(name = "distance")
     val distance: Int
