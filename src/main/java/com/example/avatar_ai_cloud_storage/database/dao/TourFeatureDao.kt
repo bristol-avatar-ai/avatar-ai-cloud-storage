@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 interface TourFeatureDao {
     // Retrieve an ordered list of feature names in the tour.
     @Query("SELECT feature FROM tour_feature ORDER BY number ASC")
-    fun getTourFeatures(): List<String>
+    suspend fun getTourFeatures(): List<String>
 
     // Retrieve an ordered Flow of feature name in the tour (allows asynchronous data observation).
     @Query("SELECT feature FROM tour_feature ORDER BY number ASC")

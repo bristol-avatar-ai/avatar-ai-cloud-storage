@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 interface FeatureDao {
     // Retrieve a list of all features.
     @Query("SELECT * FROM feature")
-    fun getFeatures(): List<Feature>
+    suspend fun getFeatures(): List<Feature>
 
     // Retrieve a Flow of all features (allows asynchronous data observation).
     @Query("SELECT * FROM feature")
@@ -24,7 +24,7 @@ interface FeatureDao {
 
     // Retrieve a specific feature by its name.
     @Query("SELECT * FROM feature WHERE name LIKE :name")
-    fun getFeature(name: String): Feature?
+    suspend fun getFeature(name: String): Feature?
 
     // Retrieve features located at a specific anchor, returned as a Flow.
     @Query("SELECT * FROM feature WHERE anchor LIKE :anchorId")

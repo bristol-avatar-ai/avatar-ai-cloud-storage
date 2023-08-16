@@ -15,7 +15,7 @@ import com.example.avatar_ai_cloud_storage.database.entity.PrimaryFeature
 interface PrimaryFeatureDao {
     // Retrieve the primary feature of an anchor.
     @Query("SELECT * FROM primary_feature WHERE anchor LIKE :anchorID")
-    fun getPrimaryFeature(anchorID: String): PrimaryFeature?
+    suspend fun getPrimaryFeature(anchorID: String): PrimaryFeature?
 
     // Insert a new primary feature, aborts on a conflict.
     @Insert(onConflict = OnConflictStrategy.ABORT)

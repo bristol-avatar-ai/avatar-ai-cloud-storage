@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 interface AnchorDao {
     // Retrieve a list of all anchors.
     @Query("SELECT * FROM anchor")
-    fun getAnchors(): List<Anchor>
+    suspend fun getAnchors(): List<Anchor>
 
     // Retrieve a Flow of all anchors (allows asynchronous data observation).
     @Query("SELECT * FROM anchor")

@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 interface PathDao {
     // Retrieve a list of all paths.
     @Query("SELECT * FROM path")
-    fun getPaths(): List<Path>
+    suspend fun getPaths(): List<Path>
 
     // Retrieve paths originating from a specific anchor, returned as a Flow.
     @Query("SELECT * FROM path WHERE anchor1 LIKE :anchorId")
