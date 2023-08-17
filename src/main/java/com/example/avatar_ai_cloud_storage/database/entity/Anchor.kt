@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
  * This data class represents an [Anchor] entity in the Room database.
  * The "anchor" table is a list of all Cloud Anchor IDs in use.
  * [id]: Cloud Anchor reference ID.
- * [description]: Description used only for anchor management.
+ * [name]: Anchor name used only for anchor management.
  */
 
 @Entity(tableName = "anchor")
@@ -17,6 +17,6 @@ data class Anchor(
     @ColumnInfo(name = "id")
     val id: String,
 
-    @ColumnInfo(name = "description")
-    val description: String
+    @ColumnInfo(name = "name")
+    val name: String
 )

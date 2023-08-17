@@ -22,13 +22,17 @@ interface AnchorDao {
     @Query("SELECT * FROM anchor")
     fun getAnchorsFlow(): Flow<List<Anchor>>
 
+    // Retrieve a specific anchor by its ID.
+    @Query("SELECT * FROM anchor WHERE id LIKE :anchorId")
+    suspend fun getAnchor(anchorId: String): Anchor?
+
     // Insert a new anchor, aborts on a conflict.
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(anchor: Anchor)
 
-    // Update an anchor's description based on its ID.
-    @Query("UPDATE anchor SET description = :description WHERE id LIKE :anchorId")
-    suspend fun update(anchorId: String, description: String)
+    // Update an anchor's name based on its ID.
+    @Query("UPDATE anchor SET name = :name WHERE id LIKE :anchorId")
+    suspend fun update(anchorId: String, name: String)
 
     // Delete an anchor based on its ID.
     @Query("DELETE FROM anchor WHERE id LIKE :anchorId")

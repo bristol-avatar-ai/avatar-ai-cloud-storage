@@ -282,7 +282,7 @@ object CloudStorageApi {
      */
     private fun processResponse(response: Response<ResponseBody>): Boolean {
         return if (response.isSuccessful) {
-            Log.i(TAG, "Database was uploaded successfully")
+            Log.i(TAG, "Database uploaded successfully")
             true
         } else {
             Log.e(
