@@ -18,9 +18,13 @@ interface PathDao {
     @Query("SELECT * FROM path")
     suspend fun getPaths(): List<Path>
 
-    // Retrieve paths originating from a specific anchor, returned as a Flow.
-    @Query("SELECT * FROM path WHERE anchor1 LIKE :anchorId")
+    // Retrieve paths originating from an anchor, returned as a Flow.
+    @Query("SELECT * FROM path WHERE anchor1 LIKE :anchorId OR anchor2 LIKE :anchorId")
     fun getPathsFromAnchor(anchorId: String): Flow<List<Path>>
+
+    // Retrieve the number of paths originating from an anchor.
+    @Query("SELECT COUNT(anchor1) FROM path WHERE anchor1 LIKE :anchorId OR anchor2 LIKE :anchorId")
+    suspend fun countPathsFromAnchor(anchorId: String): Int
 
     // Insert a new path, aborts on a conflict.
     @Insert(onConflict = OnConflictStrategy.ABORT)
