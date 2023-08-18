@@ -18,8 +18,8 @@ interface FeatureDao {
     @Query("SELECT * FROM feature")
     suspend fun getFeatures(): List<Feature>
 
-    // Retrieve a Flow of all features (allows asynchronous data observation).
-    @Query("SELECT * FROM feature")
+    // Retrieve an ordered Flow of all features (allows asynchronous data observation).
+    @Query("SELECT * FROM feature ORDER BY name ASC")
     fun getFeaturesFlow(): Flow<List<Feature>>
 
     // Retrieve a specific feature by its name.

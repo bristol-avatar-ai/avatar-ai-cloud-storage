@@ -18,8 +18,8 @@ interface AnchorDao {
     @Query("SELECT * FROM anchor")
     suspend fun getAnchors(): List<Anchor>
 
-    // Retrieve a Flow of all anchors (allows asynchronous data observation).
-    @Query("SELECT * FROM anchor")
+    // Retrieve an ordered Flow of all anchors (allows asynchronous data observation).
+    @Query("SELECT * FROM anchor ORDER BY name ASC")
     fun getAnchorsFlow(): Flow<List<Anchor>>
 
     // Retrieve a specific anchor by its ID.
