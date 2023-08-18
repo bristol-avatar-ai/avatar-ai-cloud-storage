@@ -17,15 +17,11 @@ interface PrimaryFeatureDao {
     @Query("SELECT * FROM primary_feature WHERE anchor LIKE :anchorID")
     suspend fun getPrimaryFeature(anchorID: String): PrimaryFeature?
 
-    // Insert a new primary feature, aborts on a conflict.
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    // Insert a new primary feature, replaces the original on a conflict.
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(primaryFeature: PrimaryFeature)
 
-    // Update an anchor's primary feature based on its ID.
-    @Query("UPDATE primary_feature SET feature = :featureName WHERE anchor LIKE :anchorId")
-    suspend fun update(anchorId: String, featureName: String)
-
-    // Delete a primary feature based on its Anchor ID.
-    @Query("DELETE FROM primary_feature WHERE anchor LIKE :anchorID")
-    suspend fun delete(anchorID: String)
+    // Delete a primary feature based on the feature's name.
+    @Query("DELETE FROM primary_feature WHERE feature LIKE :featureName")
+    suspend fun delete(featureName: String)
 }
