@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.avatar_ai_cloud_storage.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import retrofit2.HttpException
 import retrofit2.Retrofit
@@ -14,7 +16,7 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 /**
- * The TokenApi serves as a network API to connect to IBM IAM Cloud Authentication Service.
+ * The IamTokenApi serves as a network API to connect to IBM IAM Cloud Authentication Service.
  * IAM tokens can be requested to authenticate other services.
  */
 
@@ -67,7 +69,7 @@ private val retrofit = Retrofit.Builder()
 /*
 * Network layer: this interface defines the Retrofit HTTP requests.
  */
-interface TokenApiService {
+interface IamTokenApiService {
     /*
     * This function performs a POST request for an IAM Token.
      */
@@ -80,19 +82,22 @@ interface TokenApiService {
 }
 
 /*
-* TokenApi connects to IBM IAM Cloud Authentication Service.
+* IamTokenApi connects to IBM IAM Cloud Authentication Service.
 * It is initialised as a public singleton object to conserve resources
 * by ensuring that the Retrofit API service is only initialised once.
  */
-object TokenApi {
+object IamTokenApi {
 
     // Initialise the retrofit service only at first usage (by lazy).
-    private val retrofitService: TokenApiService by lazy {
-        retrofit.create(TokenApiService::class.java)
+    private val retrofitService: IamTokenApiService by lazy {
+        retrofit.create(IamTokenApiService::class.java)
     }
 
     // The last token requested is saved here.
     private var tokenResult: IamTokenResult? = null
+
+    // Allows synchronisation of a suspend block.
+    private val tokenMutex = Mutex()
 
     /*
     * This function returns a valid IBM IAM token. A new token
@@ -101,17 +106,20 @@ object TokenApi {
     * returned if an Exception occurs.
      */
     suspend fun getToken(): String? {
-        // The minimum expiration timestamp required in Unix format.
-        val targetUnixTimestamp =
-            (System.currentTimeMillis() / MILLISECONDS_IN_SECOND) + MIN_VALIDITY
+        // Only one coroutine can access this block at a time.
+        return tokenMutex.withLock {
+            // The minimum expiration timestamp required in Unix format.
+            val targetUnixTimestamp =
+                (System.currentTimeMillis() / MILLISECONDS_IN_SECOND) + MIN_VALIDITY
 
-        return if (tokenResult != null
-            && targetUnixTimestamp < tokenResult!!.expiration
-        ) {
-            tokenResult!!.accessToken
-        } else {
-            Log.i(TAG, "New IAM token requested")
-            getNewToken()
+            if (tokenResult != null
+                && targetUnixTimestamp < tokenResult!!.expiration
+            ) {
+                tokenResult!!.accessToken
+            } else {
+                Log.i(TAG, "New IAM token requested")
+                getNewToken()
+            }
         }
     }
 

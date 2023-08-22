@@ -173,7 +173,7 @@ object CloudStorageApi {
         option: Option
     ): Response<ResponseBody>? {
         // Get a valid IAM token, return null if unsuccessful.
-        val token = TokenApi.getToken() ?: return null
+        val token = IamTokenApi.getToken() ?: return null
         return try {
             withTimeout(TIMEOUT_MS) {
                 when (option) {
@@ -257,7 +257,7 @@ object CloudStorageApi {
     * The returned Boolean indicates if the upload was successful.
      */
     suspend fun uploadDatabase(databaseFile: File): Boolean {
-        val token = TokenApi.getToken() ?: return false
+        val token = IamTokenApi.getToken() ?: return false
         // Convert file content into RequestBody object using CONTENT_TYPE.
         val requestBody = databaseFile.asRequestBody(CONTENT_TYPE.toMediaTypeOrNull())
 
