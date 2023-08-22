@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
  * The "anchor" table is a list of all Cloud Anchor IDs in use.
  * [id]: Cloud Anchor reference ID.
  * [name]: Anchor name used only for anchor management.
+ * [daysToExpiration]: Days left until anchor expiration ("Expired" if expired).
  */
 
 @Entity(tableName = "anchor")
@@ -18,5 +19,8 @@ data class Anchor(
     val id: String,
 
     @ColumnInfo(name = "name")
-    val name: String
+    val name: String,
+
+    @ColumnInfo(name = "days_to_expiration")
+    val daysToExpiration: String
 )

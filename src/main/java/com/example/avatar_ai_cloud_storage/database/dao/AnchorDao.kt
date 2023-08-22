@@ -30,9 +30,17 @@ interface AnchorDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(anchor: Anchor)
 
+    // Insert a new anchor, ignore on a conflict.
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertIfNotPresent(anchor: Anchor)
+
     // Update an anchor's name based on its ID.
     @Query("UPDATE anchor SET name = :name WHERE id LIKE :anchorId")
     suspend fun update(anchorId: String, name: String)
+
+    // Update an anchor's days to expiration based on its ID.
+    @Query("UPDATE anchor SET days_to_expiration = :daysToExpiration WHERE id LIKE :anchorId")
+    suspend fun updateExpiration(anchorId: String, daysToExpiration: String)
 
     // Delete an anchor based on its ID.
     @Query("DELETE FROM anchor WHERE id LIKE :anchorId")

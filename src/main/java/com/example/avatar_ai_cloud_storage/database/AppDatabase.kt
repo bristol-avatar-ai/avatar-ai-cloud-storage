@@ -28,7 +28,7 @@ private const val TAG = "AppDatabase"
  */
 
 @Database(
-    version = 10,
+    version = 11,
     entities = [Anchor::class, Path::class, Feature::class, PrimaryFeature::class, TourFeature::class]
 )
 abstract class AppDatabase : RoomDatabase() {

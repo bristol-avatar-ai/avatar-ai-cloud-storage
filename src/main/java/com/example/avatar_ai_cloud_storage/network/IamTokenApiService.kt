@@ -44,7 +44,7 @@ private const val GRANT_TYPE = "urn:ibm:params:oauth:grant-type:apikey"
 
 // Time in milliseconds before a TimeoutException
 // is called on a download (GET) request.
-private const val TIMEOUT_MS = 3000L
+private const val TIMEOUT_MS = 7000L
 
 private const val MILLISECONDS_IN_SECOND = 1000L
 
