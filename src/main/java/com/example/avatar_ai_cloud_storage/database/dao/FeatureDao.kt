@@ -35,8 +35,8 @@ interface FeatureDao {
     suspend fun insert(feature: Feature)
 
     // Update a feature's description based on its name.
-    @Query("UPDATE feature SET description = :description WHERE name LIKE :name")
-    suspend fun update(name: String, description: String)
+    @Query("UPDATE feature SET anchor = :anchorId, description = :description WHERE name LIKE :name")
+    suspend fun update(name: String, anchorId: String, description: String)
 
     // Delete a feature based on its name.
     @Query("DELETE FROM feature WHERE name LIKE :name")
